@@ -1,10 +1,10 @@
 export interface user{
     id: number,
     name: string,
-    username: string,
     email: string,
+    password: string,
     permissionLevel: permissionLevel[]
-    club: string
+    team: string
 }
 
 export type permissionLevel='admin'|'user';

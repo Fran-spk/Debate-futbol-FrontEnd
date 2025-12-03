@@ -4,6 +4,7 @@ import { MiPerfil } from '../pages/miPerfil';
 import { ProtectedRouter } from './ProtectedRouter';
 import { useAppSelector } from '../../hooks/store';
 import { Home } from '../pages/home';
+import { Register } from '../pages/register';
  
 export const AppRoutes=()=> {
   const user = useAppSelector(state=> state.auth.User);
@@ -20,6 +21,7 @@ export const AppRoutes=()=> {
                 <MiPerfil/>
                 </ProtectedRouter>
             }/>
+       <Route path='/register' element={<Register/>}/>
    </Routes>
   );
 }

@@ -13,5 +13,9 @@ export const authService = {
     },
     logout: async(): Promise<void>=>{
         await api.post('auth/logout');
+    },
+    register: async(user: user) :Promise<user> =>{
+        const response = await api.post('/auth/register', user);
+        return response.data as user;
     }
 }
