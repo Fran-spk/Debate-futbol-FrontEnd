@@ -3,16 +3,19 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { authService } from "../../services/authServices"; 
 import { getClubs as getTeams, type team } from "../../services/clubServices"; 
 import type { user } from "../../types/user";
+import { useAppSelector } from "../../hooks/store";
 
 export const Register = () => {
 
     const [teams, setTeams] = useState<team[]>([]); 
     const [isLoadingTeams, setIsLoadingTeams] = useState(true);
 
+    const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm<user>();
+
+   
     useEffect(() => {
         const fetchTeams = async () => {
             try {
-
                 const response = await getTeams(); 
                 setTeams(response);
             } catch (error) {
@@ -23,8 +26,6 @@ export const Register = () => {
         };
         fetchTeams();
     }, []); 
-
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<user>();
 
     const onsubmit: SubmitHandler<user> = async (data) => {
         try {
@@ -37,13 +38,11 @@ export const Register = () => {
         }
     };
 
-    // --- RENDERIZADO ---
     return (
         <div className="container mt-4" style={{ maxWidth: "500px" }}>
             <h2>Registro de Usuario</h2>
             <form onSubmit={handleSubmit(onsubmit)}>
-                
-                {/* 1. Nombre (Sin cambios) */}
+
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">Nombre</label>
                     <input
@@ -56,7 +55,6 @@ export const Register = () => {
                     />
                     {errors.name && <div className="invalid-feedback">{errors.name.message}</div>}
                 </div>
-
 
                 <div className="mb-3">
                     <label htmlFor="email" className="form-label">Email</label>
@@ -75,27 +73,19 @@ export const Register = () => {
                     {errors.email && <div className="invalid-feedback">{errors.email.message}</div>}
                 </div>
 
-
                 <div className="mb-3">
-
                     <label htmlFor="team" className="form-label">Equipo Favorito</label> 
-
                     <select
-
-                        id="team" 
- 
+                        id="team"
                         className={`form-control ${errors.team ? "is-invalid" : ""}`} 
                         {...register("team", { 
-                            required: "Debes seleccionar un equipo",
-                            validate: value => value !== "" || "Debes seleccionar un equipo"
+                            required: "Debes seleccionar un equipo"
                         })}
                         disabled={isLoadingTeams} 
                     >
-                        {isLoadingTeams ? (
-                            <option value="">Cargando equipos...</option>
-                        ) : (
-                            <option value="">Selecciona un team...</option> 
-                        )}
+                        <option value="">
+                            {isLoadingTeams ? "Cargando equipos..." : "Selecciona un equipo..."}
+                        </option>
 
                         {teams.map((t) => ( 
                             <option key={t.id} value={t.team}>
@@ -104,9 +94,7 @@ export const Register = () => {
                         ))}
                     </select>
 
-                    {errors.team&& (
-                        <div className="invalid-feedback">{errors.team.message}</div>
-                    )}
+                    {errors.team && <div className="invalid-feedback">{errors.team.message}</div>}
                 </div>
 
                 <div className="mb-3">

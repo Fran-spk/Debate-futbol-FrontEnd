@@ -8,6 +8,7 @@ interface Props{
 
 export const ProtectedRouter=({isAllowed, redirectTo='/login', children}: Props)=>{
     if(!isAllowed){
+        alert("Debes iniciar sesión.");
         return <Navigate to={redirectTo}></Navigate>
     }
     else{
