@@ -7,6 +7,10 @@ export const postService = {
         const response = await api.get('/posts/'); 
         return response.data as Post[];
     },
+    getPostsByUser: async(userId: string): Promise<Post[]> => {
+        const response = await api.get(`/posts/user/${userId}`)
+        return response.data as Post[];
+    },
     create: async (post:CreatePostDTO): Promise<void> => {
     const response = await api.post('/posts/',post); 
     return response.data ;

@@ -6,6 +6,9 @@ import { login as loginAction } from "../../store/auth/slice";
 import { Link, Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
+import { postService } from "../../services/postServices";
+import type { Post as postType } from "../../types/post";
+import Post from "../post";
 
 export const MiPerfil = () => {
   const dispatch = useAppDispatch();
@@ -16,35 +19,67 @@ export const MiPerfil = () => {
   const [isLoadingTeams, setIsLoadingTeams] = useState(true);
 
 
+  const [myPosts, setMyPosts] = useState<postType[]>([]);
+  const [showPosts, setShowPosts] = useState(false);
+  const [loadingPosts, setLoadingPosts] = useState(false); 
+  
+  
   const [editedName, setEditedName] = useState("");
   const [editedEmail, setEditedEmail] = useState("");
   const [editedTeam, setEditedTeam] = useState("");
-
-
-  useEffect(() => {
-    if (user) {
-      setEditedName(user.name);
-      setEditedEmail(user.email);
-      setEditedTeam(user.team);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    const fetchTeams = async () => {
-      try {
-        const resp = await getTeams();
-        setTeams(resp);
-      } catch (err) {
-        console.error("Error cargando equipos:", err);
-      } finally {
-        setIsLoadingTeams(false);
+  
+    useEffect(() => {
+      if (user) {
+        setEditedName(user.name);
+        setEditedEmail(user.email);
+        setEditedTeam(user.team);
       }
-    };
-    fetchTeams();
-  }, []);
+    }, [user]);
+  
+    useEffect(() => {
+      const fetchTeams = async () => {
+        try {
+          const resp = await getTeams();
+          setTeams(resp);
+        } catch (err) {
+          console.error("Error cargando equipos:", err);
+        } finally {
+          setIsLoadingTeams(false);
+        }
+      };
+      fetchTeams();
+    }, []);
+  
+    if (!user) {
+      return <p>No hay usuario autenticado.</p>;
+    }
+  
+  
+  const handleLoadPosts = async() =>{
 
-  if (!user) {
-    return <p>No hay usuario autenticado.</p>;
+    if (showPosts){
+      setShowPosts(false);
+      return
+    }
+  
+    const userId = user?.id
+    if(!userId) return
+
+    setLoadingPosts(true);
+
+    try {
+
+      const data = await postService.getPostsByUser(userId.toString());
+
+      setMyPosts(data);
+      setShowPosts(true);
+      
+    } catch (error) {
+      alert("No se pudieron cargar los posts.")      
+    
+    } finally{  
+      setLoadingPosts(false);
+    }
   }
 
   const saveChanges = async () => {
@@ -146,7 +181,38 @@ export const MiPerfil = () => {
           </div>
         </div>
 
-        <div className="card-footer text-body-secondary">10 posteos publicados en total (traer posteos)</div>
+        {/* Posteos */}
+        <div className="card-footer text-body-secondary bg-light pt-3">            
+            <div className="d-flex justify-content-center gap-2 mb-4">
+                <button 
+                    className={`btn ${showPosts ? 'btn-success' : 'btn-outline-success'}`}
+                    onClick={handleLoadPosts}
+                    disabled={loadingPosts}
+                >
+                    {loadingPosts ? "Cargando..." : (showPosts ? "Ocultar Publicaciones" : "Mis Publicaciones")}
+                </button>
+            </div>
+            {showPosts && (
+                <div className="text-start animated fadeIn">
+                     <h6 className="mb-3 border-bottom pb-2">Mis Posteos ({myPosts.length})</h6>
+                     
+                     {myPosts.length === 0 ? (
+                        <div className="alert alert-warning text-center">No has publicado nada aún.</div>
+                     ) : (
+                        <div className="d-flex flex-column gap-3">
+                            {myPosts.map(post => (
+                                <Post 
+                                    key={post._id} 
+                                    post={post} 
+                                    refreshPosts={handleLoadPosts} 
+                                />
+                            ))}
+                        </div>
+                     )}
+                </div>
+            )}
+
+        </div>
 
       </div>
     </div>
