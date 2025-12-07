@@ -1,9 +1,15 @@
 import { Nav } from './components/nav'
-import { Home } from './components/pages/home'
 import './App.css'
+import { useAppDispatch } from './hooks/store';
+import { useEffect } from 'react';
+import { loadUser } from './store/auth/slice';
 
 function App() {
+const dispatch = useAppDispatch();
 
+  useEffect(() => {
+    dispatch(loadUser());
+  }, []);
   return (
     <Nav></Nav>
   );

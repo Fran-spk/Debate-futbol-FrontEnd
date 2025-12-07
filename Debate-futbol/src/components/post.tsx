@@ -1,27 +1,47 @@
 import React, { useState } from "react";
 import { postService } from "../services/postServices";
+import { useAppSelector } from "../hooks/store";
+import CommentList from "./commentList";
+import { commentService } from "../services/commentServices";
+import type { Comment as CommentType } from "../types/comment";
 
-const Post = ({ post, onDelete }: { post: any, onDelete?: (id: string) => void }) => {
+
+
+const Post = ({post,refreshPosts}: {  post: any;  refreshPosts: () => void;}) => {
   const [commentText, setCommentText] = useState("");
   const [showComments, setShowComments] = useState(false);
+  const user = useAppSelector(state => state.auth.User);
 
-  const handleComment = () => {
-    if (!commentText.trim()) return;
-    console.log("Comentario enviado:", commentText, "para el post", post._id);
+  
+const handleComment = async () => {
+  if (!commentText.trim()) return;
+
+
+    const comment = {
+      postId: post._id,        // id del post actual
+      userId: user?.id,        // id del usuario logueado
+      content: commentText.trim() // contenido del comentario
+    };
+
+    const response = await commentService.create(comment as CommentType);
+
+    console.log("Comentario creado:", response);
     setCommentText("");
-  };
+ 
+};
+  const isMyPost = !!post.user && post.user._id === user?.id;
 
+  
   const handleDelete = async () => {
     if (!window.confirm("¿Seguro que querés eliminar este post?")) return;
     try {
-      await postService.delete(post._id);
-      console.log("Post eliminado:", post._id);
-      if (onDelete) onDelete(post._id); // Callback para actualizar UI
+      const response = await postService.delete(post);
+      alert(response);
+      refreshPosts();
     } catch (error) {
       console.error("Error al eliminar el post:", error);
     }
   };
-
   return (
     <div
       className="p-4 mb-4 rounded shadow-sm text-start" 
@@ -40,14 +60,16 @@ const Post = ({ post, onDelete }: { post: any, onDelete?: (id: string) => void }
           <small className="text-muted">
             {new Date(post.createdAt).toLocaleString()}
           </small>
-          <button
-            className="btn btn-outline-danger btn-sm"
-            style={{ fontSize: "0.8rem", padding: "0 0.25rem" }}
-            onClick={handleDelete}
-            title="Eliminar post"
-          >
-            ❌
-          </button>
+          {isMyPost && (
+            <button
+              className="btn btn-outline-danger btn-sm"
+              style={{ fontSize: "0.8rem", padding: "0 0.25rem" }}
+              onClick={handleDelete}
+              title="Eliminar post"
+            >
+              Eliminar
+            </button>
+          )}
         </div>
       </div>
 
@@ -83,23 +105,9 @@ const Post = ({ post, onDelete }: { post: any, onDelete?: (id: string) => void }
           {showComments ? "Ocultar comentarios" : "Ver comentarios"}
         </button>
       </div>
-
-
       {showComments && (
         <div className="mt-2">
-          {post.comments?.length > 0 ? (
-            post.comments.map((c: any, index: number) => (
-              <div
-                key={index}
-                className="p-2 my-1 rounded"
-                style={{ background: "#ffffff40", border: "1px solid #333" }}
-              >
-                <strong>{c.user?.name || "Anónimo"}:</strong> {c.text}
-              </div>
-            ))
-          ) : (
-            <p className="text-muted">No hay comentarios aún.</p>
-          )}
+              <CommentList postId={post._id}></CommentList>
         </div>
       )}
     </div>

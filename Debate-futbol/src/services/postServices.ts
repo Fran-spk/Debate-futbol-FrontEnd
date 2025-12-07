@@ -13,6 +13,7 @@ export const postService = {
     },
     delete: async (post:Post): Promise<void> => {
     const response = await api.delete(`/posts/${post._id}`);
+    console.log(response);
     return response.data;
     }
     

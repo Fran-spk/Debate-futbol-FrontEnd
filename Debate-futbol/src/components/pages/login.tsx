@@ -31,6 +31,7 @@ export const Login = () => {
       if (response) {
         dispatch(loginAction(response));
         navigate("/home");
+        console.log(response);
       }
     } catch (error) {
       console.error("Error al iniciar sesión:", error);

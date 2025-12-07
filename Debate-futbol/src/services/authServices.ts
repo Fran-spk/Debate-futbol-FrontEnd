@@ -17,5 +17,12 @@ export const authService = {
     register: async(user: user) :Promise<user> =>{
         const response = await api.post('/auth/register', user);
         return response.data as user;
-    }
-}
+    },
+    getMe:  async() :Promise<user> =>{
+    const response = await api.get("/auth/me", {
+      withCredentials: true,  
+    });
+    return response.data;
+  },
+};
+
