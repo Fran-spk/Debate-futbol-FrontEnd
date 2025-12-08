@@ -3,6 +3,8 @@ import { userService } from "../../services/userServicies";
 import { useAppSelector } from "../../hooks/store";
 import type { user } from "../../types/user";
 import { Link } from "react-router-dom";
+import ModalDelete from "../../modals/modalDelete";   
+
 
 export const Users = () => {
 
@@ -10,6 +12,10 @@ export const Users = () => {
   
   const [users, setUsers] = useState<user[]>([]);
   const [loading, setLoading] = useState(true);
+
+
+  const [userSelected, setUserSelected] = useState<user | null>(null);
+  
 
   const isAdmin = currentUser?.permissions?.includes('admin');
 
@@ -28,20 +34,28 @@ export const Users = () => {
     fetchUsers();
   }, []);
 
-  const handleDelete = async (user: user) => {
-    if (!confirm(`¿Estás seguro que deseas eliminar al usuario ${user.name}?`)) {
+  const clickDelete = (user: user) => {
+    setUserSelected(user);
+  };
+
+
+  const handleDelete = async (confirmed:boolean) => {
+
+    if(!confirmed || !userSelected) {
+      setUserSelected(null);
       return;
     }
 
     try {
-      await userService.delete(user);
-      alert("Usuario eliminado.");
+      await userService.delete(userSelected);
       setUsers(users.map((u => 
-        u._id === user._id ? { ...u, active: false } : u
+        u._id === userSelected._id ? { ...u, active: false } : u
       )));
     } catch (error) {
       console.error("Error eliminando usuario:", error);
       alert("No se pudo eliminar al usuario.");
+    } finally {
+      setUserSelected(null);
     }
   };
 
@@ -78,12 +92,14 @@ return (
 
           return (
             <div className="col" key={userId}>
-              <div className={`card h-100 shadow-sm  ${!isActive ? 'border-danger bg-light' : 'border-success-subtle'}`}
-                    style={{
-                      backgroundColor: "#77947bb8",
-                      border: "1px solid #2c2a2a",}}>
+              <div 
+                className={`card h-100 shadow-sm ${!isActive ? 'border-danger bg-light opacity-75' : 'border-success-subtle'}`}
+                style={{
+                   backgroundColor: isActive ? "#77947bb8" : "#f8d7da",
+                   border: "1px solid #2c2a2a",
+                }}
+              >
                 
-                {/* Usamos flex-column para apilar uno abajo del otro */}
                 <div className="card-body d-flex flex-column align-items-center text-center">
                   
                   {/* 1. Nombre */}
@@ -92,7 +108,7 @@ return (
                   </h5>
 
                   {/* 2. Email */}
-                  <p className="text-muted small mb-2">
+                  <p className="text-muted small mb-2 text-truncate" style={{maxWidth: "100%"}}>
                     {userItem.email}
                   </p>
 
@@ -112,7 +128,7 @@ return (
                     )}
                   </div>
 
-                  {/* Botonera */}
+                  {/* Botonera (al fondo) */}
                   <div className="mt-auto d-flex gap-2 w-100 justify-content-center">
                     <Link 
                       to={`/miPerfil/${userId}`} 
@@ -124,17 +140,15 @@ return (
                     {/* LÓGICA DE BOTONES ADMIN */}
                     {isAdmin && currentUser?._id !== userId && (
                         <>
-                            {/* Si está ACTIVO, muestra eliminar*/}
                             {isActive && (
                                 <button
                                     className="btn btn-danger btn-sm rounded-pill px-3"
-                                    onClick={() => handleDelete(userItem)}
+                                    onClick={() => clickDelete(userItem)}
                                 >
                                     Eliminar
                                 </button>
                             )}
 
-                            {/* Si está INACTIVO, muestra Activar */}
                             {!isActive && (
                                 <button
                                     className="btn bg-success btn-primary btn-sm rounded-pill px-3"
@@ -153,6 +167,12 @@ return (
           );
         })}
       </div>
+      {userSelected && (
+        <ModalDelete 
+          onConfirm={handleDelete} 
+        />
+      )}
+
     </div>
   );
 };
