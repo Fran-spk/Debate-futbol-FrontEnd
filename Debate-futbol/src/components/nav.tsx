@@ -21,26 +21,21 @@ export const Nav = () => {
         }}
       >
         <h4 className="mb-4">Menú</h4>
-       <Link className="nav-link text-secondary mb-2" to="/home">
+       <Link className="nav-link text-secondary mb-3" to="/home">
         Home
       </Link>
 
-      <Link className="nav-link text-secondary mb-2" to="/login">
-        {user ? "Cerrar sesión" : "Login"}
+      <Link className="nav-link text-secondary mb-3" to="/users">
+        Usuarios
       </Link>
 
-      <Link className="nav-link text-secondary mb-4" to="/miPerfil">
+      <Link className="nav-link text-secondary mb-3" to="/miPerfil">
         Mi perfil
       </Link>
 
-      {user && user?.permissions?.includes("admin") && (
-        <Link className="nav-link text-secondary mb-4" to="/users">
-          Panel admin
-        </Link>
-      )}
-
-      
-
+      <Link className="nav-link text-secondary mb-3" to="/login">
+        {user ? "Cerrar sesión" : "Login"}
+      </Link>
 
       <Link 
         className="btn btn-success btn-lg rounded-pill shadow-sm mb-3 w-100" 

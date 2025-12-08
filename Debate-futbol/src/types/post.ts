@@ -1,6 +1,6 @@
 
 export interface CreatePostDTO {
-  user?: number;             
+  user?: string;             
   content: string;
   team?: string | null;
 }

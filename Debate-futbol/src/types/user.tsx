@@ -4,7 +4,8 @@ export interface user{
     email: string,
     password: string,
     permissions: permissionLevel[]
-    team: string
+    team: string,
+    active: boolean
 }
 
 export type permissionLevel='admin'|'user';

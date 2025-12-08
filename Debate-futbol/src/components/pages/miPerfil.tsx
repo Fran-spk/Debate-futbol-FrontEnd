@@ -8,8 +8,8 @@ import { useNavigate } from "react-router-dom";
 
 import { postService } from "../../services/postServices";
 import type { Post as postType } from "../../types/post";
-import Post from "../post";
 import ModalDelete from "../../modals/modalDelete";   
+import Post from "../post";
 
 export const MiPerfil = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -215,7 +215,7 @@ export const MiPerfil = () => {
                 ? "Cargando..."
                 : showPosts
                 ? "Ocultar Publicaciones"
-                : "Mis Publicaciones"}
+                : "Publicaciones"}
             </button>
           </div>
 
