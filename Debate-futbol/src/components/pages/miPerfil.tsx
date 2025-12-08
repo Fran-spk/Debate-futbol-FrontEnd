@@ -3,84 +3,99 @@ import { useAppSelector, useAppDispatch } from '../../hooks/store';
 import { getClubs as getTeams, type team } from "../../services/clubServices";
 import { userService } from "../../services/userServicies";
 import { login as loginAction } from "../../store/auth/slice";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 import { postService } from "../../services/postServices";
 import type { Post as postType } from "../../types/post";
 import Post from "../post";
+import ModalDelete from "../../modals/modalDelete";   
 
 export const MiPerfil = () => {
+  const { userId } = useParams<{ userId: string }>();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const user = useAppSelector(state => state.auth.User);
+  const user = useAppSelector((state) => state.auth.User);
 
+  useEffect(() => {
+  const fetchUser = async () => {
+    if (userId) {
+      try {
+        const u = await userService.getUserById(userId);
+        if (u) {
+          setEditedName(u.name);
+          setEditedEmail(u.email);
+          setEditedTeam(u.team);
+          setIdUser(u._id);
+        }
+      } catch (error) {
+        console.error("Error al obtener usuario por ID:", error);
+      }
+    } else if (user) {
+      setEditedName(user.name);
+      setEditedEmail(user.email);
+      setEditedTeam(user.team);
+      setIdUser(user._id);
+    }
+  };
+
+  fetchUser();
+}, [userId, user]);
+
+
+
+  
   const [teams, setTeams] = useState<team[]>([]);
   const [isLoadingTeams, setIsLoadingTeams] = useState(true);
 
-
   const [myPosts, setMyPosts] = useState<postType[]>([]);
   const [showPosts, setShowPosts] = useState(false);
-  const [loadingPosts, setLoadingPosts] = useState(false); 
-  
-  
+  const [loadingPosts, setLoadingPosts] = useState(false);
+
   const [editedName, setEditedName] = useState("");
   const [editedEmail, setEditedEmail] = useState("");
   const [editedTeam, setEditedTeam] = useState("");
-  
-    useEffect(() => {
-      if (user) {
-        setEditedName(user.name);
-        setEditedEmail(user.email);
-        setEditedTeam(user.team);
-      }
-    }, [user]);
-  
-    useEffect(() => {
-      const fetchTeams = async () => {
-        try {
-          const resp = await getTeams();
-          setTeams(resp);
-        } catch (err) {
-          console.error("Error cargando equipos:", err);
-        } finally {
-          setIsLoadingTeams(false);
-        }
-      };
-      fetchTeams();
-    }, []);
-  
-    if (!user) {
-      return <p>No hay usuario autenticado.</p>;
-    }
-  
-  
-  const handleLoadPosts = async() =>{
+  const [idUser, setIdUser] = useState("");
 
-    if (showPosts){
+  const [showDeleteModal, setShowDeleteModal] = useState(false); 
+
+
+  useEffect(() => {
+    const fetchTeams = async () => {
+      try {
+        const resp = await getTeams();
+        setTeams(resp);
+      } catch (err) {
+        console.error("Error cargando equipos:", err);
+      } finally {
+        setIsLoadingTeams(false);
+      }
+    };
+    fetchTeams();
+  }, []);
+
+  if (!user) return <p>No hay usuario autenticado.</p>;
+
+  const handleLoadPosts = async () => {
+    if (showPosts) {
       setShowPosts(false);
-      return
+      return;
     }
-  
-    const userId = user?.id
-    if(!userId) return
+
+    if (!idUser) return;
 
     setLoadingPosts(true);
 
     try {
-
-      const data = await postService.getPostsByUser(userId.toString());
-
+      const data = await postService.getPostsByUser(idUser.toString());
       setMyPosts(data);
       setShowPosts(true);
-      
     } catch (error) {
-      alert("No se pudieron cargar los posts.")      
-    
-    } finally{  
+      alert("No se pudieron cargar los posts.");
+    } finally {
       setLoadingPosts(false);
     }
-  }
+  };
 
   const saveChanges = async () => {
     try {
@@ -103,13 +118,27 @@ export const MiPerfil = () => {
     }
   };
 
+  const handleDeleteAccountConfirm = async (confirmed: boolean) => {
+    setShowDeleteModal(false);
+
+    if (!confirmed) return;
+
+    try {
+      await userService.delete(user);
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+      alert("Error al dar de baja la cuenta.");
+    }
+  };
+
   return (
     <div className="container mt-4">
       <div className="card text-center">
         <div className="card-header">Mi Perfil</div>
 
         <div className="card-body">
-          <h5 className="card-title">{user.name}</h5>
+          <h5 className="card-title">{editedName}</h5>
 
           {/* Nombre */}
           <div className="d-flex justify-content-between align-items-center mb-3">
@@ -135,7 +164,7 @@ export const MiPerfil = () => {
             />
           </div>
 
-          {/* Equipo Favorito (select) */}
+          {/* Equipo Favorito */}
           <div className="d-flex justify-content-between align-items-center mb-3">
             <strong style={{ width: "30%" }}>Equipo Favorito:</strong>
 
@@ -147,7 +176,9 @@ export const MiPerfil = () => {
               onChange={(e) => setEditedTeam(e.target.value)}
               disabled={isLoadingTeams}
             >
-              <option value="">{isLoadingTeams ? "Cargando equipos..." : "Selecciona un equipo..."}</option>
+              <option value="">
+                {isLoadingTeams ? "Cargando equipos..." : "Selecciona un equipo..."}
+              </option>
               {teams.map((t) => (
                 <option key={t.id} value={t.team}>
                   {t.team}
@@ -155,6 +186,7 @@ export const MiPerfil = () => {
               ))}
             </select>
           </div>
+
           <hr />
 
           <div className="d-grid gap-2">
@@ -164,57 +196,59 @@ export const MiPerfil = () => {
 
             <button
               className="btn btn-warning"
-              onClick={() => {
-                if (confirm("¿Confirmás dar de baja la cuenta?")) {
-                  userService.delete?.(user).then(() => {
-                    alert("Cuenta dada de baja.");
-                    navigate("/login");
-                  }).catch((err) => {
-                    console.error(err);
-                    alert("Error al dar de baja la cuenta.");
-                  });
-                }
-              }}
+              onClick={() => setShowDeleteModal(true)} // <--- ABRE EL MODAL
             >
               Dar de baja cuenta
             </button>
           </div>
         </div>
 
-        {/* Posteos */}
-        <div className="card-footer text-body-secondary bg-light pt-3">            
-            <div className="d-flex justify-content-center gap-2 mb-4">
-                <button 
-                    className={`btn ${showPosts ? 'btn-success' : 'btn-outline-success'}`}
-                    onClick={handleLoadPosts}
-                    disabled={loadingPosts}
-                >
-                    {loadingPosts ? "Cargando..." : (showPosts ? "Ocultar Publicaciones" : "Mis Publicaciones")}
-                </button>
-            </div>
-            {showPosts && (
-                <div className="text-start animated fadeIn">
-                     <h6 className="mb-3 border-bottom pb-2">Mis Posteos ({myPosts.length})</h6>
-                     
-                     {myPosts.length === 0 ? (
-                        <div className="alert alert-warning text-center">No has publicado nada aún.</div>
-                     ) : (
-                        <div className="d-flex flex-column gap-3">
-                            {myPosts.map(post => (
-                                <Post 
-                                    key={post._id} 
-                                    post={post} 
-                                    refreshPosts={handleLoadPosts} 
-                                />
-                            ))}
-                        </div>
-                     )}
+        {/* Publicaciones */}
+        <div className="card-footer text-body-secondary bg-light pt-3">
+          <div className="d-flex justify-content-center gap-2 mb-4">
+            <button
+              className={`btn ${showPosts ? "btn-success" : "btn-outline-success"}`}
+              onClick={handleLoadPosts}
+              disabled={loadingPosts}
+            >
+              {loadingPosts
+                ? "Cargando..."
+                : showPosts
+                ? "Ocultar Publicaciones"
+                : "Mis Publicaciones"}
+            </button>
+          </div>
+
+          {showPosts && (
+            <div className="text-start animated fadeIn">
+              <h6 className="mb-3 border-bottom pb-2">
+                Mis Posteos ({myPosts.length})
+              </h6>
+
+              {myPosts.length === 0 ? (
+                <div className="alert alert-warning text-center">
+                  No has publicado nada aún.
                 </div>
-            )}
-
+              ) : (
+                <div className="d-flex flex-column gap-3">
+                  {myPosts.map((post) => (
+                    <Post
+                      key={post._id}
+                      post={post}
+                      refreshPosts={handleLoadPosts}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
-
       </div>
+
+      {/* MODAL CONFIRMACIÓN DE BAJA */}
+      {showDeleteModal && (
+        <ModalDelete onConfirm={handleDeleteAccountConfirm} />
+      )}
     </div>
   );
 };

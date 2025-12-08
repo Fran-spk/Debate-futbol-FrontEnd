@@ -1,9 +1,9 @@
 export interface user{
-    id: string,
+    _id: string,
     name: string,
     email: string,
     password: string,
-    permission: permissionLevel[]
+    permissions: permissionLevel[]
     team: string
 }
 

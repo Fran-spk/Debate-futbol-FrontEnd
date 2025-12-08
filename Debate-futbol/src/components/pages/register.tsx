@@ -4,6 +4,8 @@ import { authService } from "../../services/authServices";
 import { getClubs as getTeams, type team } from "../../services/clubServices"; 
 import type { user } from "../../types/user";
 import { useAppSelector } from "../../hooks/store";
+import ModalUserCreated from "../../modals/modalUserCreated";
+import ModalLogin from "../../modals/modalLogin";
 
 export const Register = () => {
 
@@ -27,16 +29,20 @@ export const Register = () => {
         fetchTeams();
     }, []); 
 
+
+    const [showModalLogin, setShowModalLogin] = useState(false);
+
+   
     const onsubmit: SubmitHandler<user> = async (data) => {
-        try {
-            const response = await authService.register(data);
-            if (response) {
-                console.log("Registro exitoso:", response);
-            }
-        } catch (error) {
-            console.error("Error al registrarse:", error);
+        const response = await authService.register(data);
+        if (response) {
+            setShowModalLogin(true); 
+        }
+        else{
+            console.log(errors);
         }
     };
+
 
     return (
         <div className="container mt-4" style={{ maxWidth: "500px" }}>
@@ -122,6 +128,7 @@ export const Register = () => {
                     {isSubmitting ? "Registrando..." : "Registrarme"}
                 </button>
             </form>
+              {showModalLogin && <ModalUserCreated />}
         </div>
     );
 };

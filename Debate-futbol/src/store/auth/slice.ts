@@ -1,3 +1,4 @@
+import { use } from "react";
 import { authService } from "../../services/authServices";
 import type { user } from "../../types/user";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
@@ -9,6 +10,7 @@ export const loadUser = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const user = await authService.getMe();
+      console.log("aver aca:",user);
       return user;
     } catch (err) {
       return thunkAPI.rejectWithValue("No autenticado");

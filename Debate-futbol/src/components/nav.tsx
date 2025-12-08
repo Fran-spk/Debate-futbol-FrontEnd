@@ -33,6 +33,14 @@ export const Nav = () => {
         Mi perfil
       </Link>
 
+      {user && user?.permissions?.includes("admin") && (
+        <Link className="nav-link text-secondary mb-4" to="/users">
+          Panel admin
+        </Link>
+      )}
+
+      
+
 
       <Link 
         className="btn btn-success btn-lg rounded-pill shadow-sm mb-3 w-100" 

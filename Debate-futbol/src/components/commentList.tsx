@@ -7,24 +7,26 @@ const CommentList = ({ postId }: { postId: string }) => {
   const [comments, setComments] = useState<CommentType[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadComments = async () => {
-      try {
-        const data: CommentType[] = (await commentService.getComment(postId)).map((c: any) => ({
-          id: c.id,
-          user: c.user || { name: "Anónimo" },
-          postId: c.postId,
-          content: c.content,
-          createdAt: c.createdAt,
-        }));
-        setComments(data);
-      } catch (error) {
-        console.error("Error cargando comentarios:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // LA función que refresca comentarios
+  const loadComments = async () => {
+    try {
+      const data = (await commentService.getComment(postId)).map((c: any) => ({
+        _id: c?._id ?? "",
+        user: c?.user ?? { name: "Anónimo" },
+        postId: c?.postId ?? "",
+        content: c?.content ?? "",
+        createdAt: c?.createdAt ?? "",
+      })) as CommentType[];
 
+      setComments(data);
+    } catch (error) {
+      console.error("Error cargando comentarios:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadComments();
   }, [postId]);
 
@@ -33,7 +35,13 @@ const CommentList = ({ postId }: { postId: string }) => {
   return (
     <div className="mt-2">
       {comments.length > 0 ? (
-        comments.map((c) => <Comment key={c.id} comment={c} />)
+        comments.map((c) => (
+          <Comment 
+            key={c._id} 
+            comment={c} 
+            refreshComments={loadComments}
+          />
+        ))
       ) : (
         <p className="text-muted">No hay comentarios aún.</p>
       )}
