@@ -11,7 +11,6 @@ export const Users = () => {
   const [users, setUsers] = useState<user[]>([]);
   const [loading, setLoading] = useState(true);
 
-
   const isAdmin = currentUser?.permissions?.includes('admin');
 
   const fetchUsers = async () => {
@@ -25,29 +24,42 @@ export const Users = () => {
     }
   };
 
-
-
   useEffect(() => {
     fetchUsers();
   }, []);
 
   const handleDelete = async (user: user) => {
-    if (!confirm(`¿Estás seguro que deseas ELIMINAR al usuario ${user.name}? Esta acción no se puede deshacer.`)) {
+    if (!confirm(`¿Estás seguro que deseas eliminar al usuario ${user.name}?`)) {
       return;
     }
 
     try {
-
       await userService.delete(user);
       alert("Usuario eliminado.");
-      setUsers(users.filter((u) => u._id !== user._id)); 
+      setUsers(users.map((u => 
+        u._id === user._id ? { ...u, active: false } : u
+      )));
     } catch (error) {
       console.error("Error eliminando usuario:", error);
       alert("No se pudo eliminar al usuario.");
     }
-
   };
 
+
+  const handleActive = async (user: user) => {
+    try {
+      await userService.activeUser(user);
+      alert("Estado del usuario actualizado.");
+    
+      setUsers(users.map((u => 
+        u._id === user._id ? { ...u, active: true } : u
+      )));
+
+    } catch (error) {
+      console.error("Error activando al usuario:", error);
+      alert("No se pudo actualizar el estado del usuario.");
+    }
+  }
 
   if (loading) return <div className="text-center mt-5"><div className="spinner-border text-success"></div></div>;
 
@@ -100,23 +112,38 @@ return (
                     )}
                   </div>
 
-                  {/* Botonera (mt-auto empuja los botones al fondo) */}
+                  {/* Botonera */}
                   <div className="mt-auto d-flex gap-2 w-100 justify-content-center">
                     <Link 
                       to={`/miPerfil/${userId}`} 
-                      className="btn btn-outline-success btn-sm rounded-pill px-3"
+                      className="btn btn-outline-dark btn-sm rounded-pill px-3 bg-white"
                     >
                       Ver Perfil
                     </Link>
 
-                    {/* Botón Eliminar (Solo Admin, no a sí mismo, y si está activo) */}
-                    {isAdmin && currentUser?._id !== userId && isActive && (
-                      <button
-                        className="btn btn-danger btn-sm rounded-pill px-3"
-                        onClick={() => handleDelete(userItem)}
-                      >
-                        Eliminar
-                      </button>
+                    {/* LÓGICA DE BOTONES ADMIN */}
+                    {isAdmin && currentUser?._id !== userId && (
+                        <>
+                            {/* Si está ACTIVO, muestra eliminar*/}
+                            {isActive && (
+                                <button
+                                    className="btn btn-danger btn-sm rounded-pill px-3"
+                                    onClick={() => handleDelete(userItem)}
+                                >
+                                    Eliminar
+                                </button>
+                            )}
+
+                            {/* Si está INACTIVO, muestra Activar */}
+                            {!isActive && (
+                                <button
+                                    className="btn bg-success btn-primary btn-sm rounded-pill px-3"
+                                    onClick={() => handleActive(userItem)}
+                                >
+                                    Activar
+                                </button>
+                            )}
+                        </>
                     )}
                   </div>
 

@@ -19,5 +19,11 @@ export const userService = {
     getUserById: async (_id:string): Promise<user> => {
         const response = await api.get(`/users/${_id}`); 
         return response.data as user;
+    },
+
+    activeUser: async (user: user): Promise<user> => {
+        const response = await api.patch(`/users/${user._id}/activate`);
+        return response.data as user;
     }
+
 }
