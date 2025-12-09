@@ -17,11 +17,10 @@ export const Nav = () => {
             Home
           </Link>
 
-          {user?.permissions.includes('admin') && (
-            <Link className="nav-link text-secondary mb-3 fs-5" to="/users">
-              Usuarios
-            </Link>
-          )}
+          <Link className="nav-link text-secondary mb-3 fs-5" to="/users">
+            Comunidad
+          </Link>
+          
 
           <Link className="nav-link text-secondary mb-3 fs-5" to="/miPerfil">
             Mi perfil

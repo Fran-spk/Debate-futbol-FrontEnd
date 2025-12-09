@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import type { Post } from "../types/post";
 import { authService } from "../services/authServices";
 import type { User } from "../types/user";
-import { userService } from "../services/userServicies";
+import { userService } from "../services/userServices";
 
 const CardPost = ({ post, refreshPosts }: { post: Post; refreshPosts: () => void }) => {
   const [commentText, setCommentText] = useState("");

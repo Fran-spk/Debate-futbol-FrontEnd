@@ -20,10 +20,10 @@ export const Login = () => {
 
     useEffect(() => {
         if (user) {
-            dispatch(logout());
+        dispatch(logout());
         }
         setApiError(null); 
-    }, [dispatch, user]);
+    }, [dispatch]);
 
     const onsubmit: SubmitHandler<Inputs> = async (data) => {
         setApiError(null);

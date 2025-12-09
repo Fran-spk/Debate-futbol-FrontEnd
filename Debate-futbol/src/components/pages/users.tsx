@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { userService } from "../../services/userServicies";
+import { userService } from "../../services/userServices";
 import { useAppSelector } from "../../hooks/store";
 import type { User } from "../../types/user";
 import { Link } from "react-router-dom";

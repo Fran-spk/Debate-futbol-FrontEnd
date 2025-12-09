@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from '../../hooks/store';
 import { getClubs as getTeams, type team } from "../../services/clubServices";
-import { userService } from "../../services/userServicies";
+import { userService } from "../../services/userServices";
 import { login as loginAction } from "../../store/auth/slice";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -131,7 +131,6 @@ export const MiPerfil = () => {
     <div className="container mt-4">
       <div className="card text-center">
         <div className="card-header">Mi Perfil</div>
-
         <div className="card-body">
           <h5 className="card-title">{editedName}</h5>
 
