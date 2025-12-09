@@ -13,4 +13,5 @@ export interface Post {
   team?: string | null;
   createdAt: string;
   updatedAt?: string;
+  countLikes: number;  
 }

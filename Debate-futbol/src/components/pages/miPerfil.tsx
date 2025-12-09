@@ -5,17 +5,29 @@ import { userService } from "../../services/userServicies";
 import { login as loginAction } from "../../store/auth/slice";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-
 import { postService } from "../../services/postServices";
-import type { Post as postType } from "../../types/post";
+import type { Post } from "../../types/post";
 import ModalDelete from "../../modals/modalDelete";   
-import Post from "../post";
+import CardPost from "../cardPost";
 
 export const MiPerfil = () => {
   const { userId } = useParams<{ userId: string }>();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.User);
+  const [teams, setTeams] = useState<team[]>([]);
+  const [isLoadingTeams, setIsLoadingTeams] = useState(true);
+
+  const [myPosts, setMyPosts] = useState<Post[]>([]);
+  const [showPosts, setShowPosts] = useState(false);
+  const [loadingPosts, setLoadingPosts] = useState(false);
+
+  const [editedName, setEditedName] = useState("");
+  const [editedEmail, setEditedEmail] = useState("");
+  const [editedTeam, setEditedTeam] = useState("");
+  const [idUser, setIdUser] = useState("");
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false); 
 
   useEffect(() => {
   const fetchUser = async () => {
@@ -41,23 +53,6 @@ export const MiPerfil = () => {
 
   fetchUser();
 }, [userId, user]);
-
-
-
-  
-  const [teams, setTeams] = useState<team[]>([]);
-  const [isLoadingTeams, setIsLoadingTeams] = useState(true);
-
-  const [myPosts, setMyPosts] = useState<postType[]>([]);
-  const [showPosts, setShowPosts] = useState(false);
-  const [loadingPosts, setLoadingPosts] = useState(false);
-
-  const [editedName, setEditedName] = useState("");
-  const [editedEmail, setEditedEmail] = useState("");
-  const [editedTeam, setEditedTeam] = useState("");
-  const [idUser, setIdUser] = useState("");
-
-  const [showDeleteModal, setShowDeleteModal] = useState(false); 
 
 
   useEffect(() => {
@@ -140,7 +135,6 @@ export const MiPerfil = () => {
         <div className="card-body">
           <h5 className="card-title">{editedName}</h5>
 
-          {/* Nombre */}
           <div className="d-flex justify-content-between align-items-center mb-3">
             <strong style={{ width: "30%" }}>Nombre:</strong>
             <input
@@ -152,7 +146,6 @@ export const MiPerfil = () => {
             />
           </div>
 
-          {/* Email */}
           <div className="d-flex justify-content-between align-items-center mb-3">
             <strong style={{ width: "30%" }}>Email:</strong>
             <input
@@ -164,7 +157,6 @@ export const MiPerfil = () => {
             />
           </div>
 
-          {/* Equipo Favorito */}
           <div className="d-flex justify-content-between align-items-center mb-3">
             <strong style={{ width: "30%" }}>Equipo Favorito:</strong>
 
@@ -188,7 +180,7 @@ export const MiPerfil = () => {
           </div>
 
           <hr />
-
+          {(idUser===user._id) &&
           <div className="d-grid gap-2">
             <button className="btn btn-primary" onClick={saveChanges}>
               Guardar cambios
@@ -201,9 +193,10 @@ export const MiPerfil = () => {
               Dar de baja cuenta
             </button>
           </div>
+          }
+          
         </div>
 
-        {/* Publicaciones */}
         <div className="card-footer text-body-secondary bg-light pt-3">
           <div className="d-flex justify-content-center gap-2 mb-4">
             <button
@@ -231,13 +224,15 @@ export const MiPerfil = () => {
                 </div>
               ) : (
                 <div className="d-flex flex-column gap-3">
-                  {myPosts.map((post) => (
-                    <Post
-                      key={post._id}
-                      post={post}
-                      refreshPosts={handleLoadPosts}
-                    />
-                  ))}
+                {myPosts.map((post) => {
+                return (
+                  <CardPost
+                    key={post._id}
+                    post={post}
+                    refreshPosts={handleLoadPosts}
+                  />
+                );
+              })}
                 </div>
               )}
             </div>

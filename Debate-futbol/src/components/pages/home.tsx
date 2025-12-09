@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { postService } from "../../services/postServices";
-import Post from "../post";
+import Post from "../cardPost";
 
 export const Home = () => {
   const [posts, setPosts] = useState<any[]>([]);
@@ -9,6 +9,7 @@ export const Home = () => {
   const refreshPosts = async () => {
     try {
       const data = await postService.getPosts();
+  
       setPosts(data);
     } catch (error) {
       console.error("Error al refrescar los posts:", error);
@@ -24,7 +25,7 @@ export const Home = () => {
   return (
     <div className="container mt-4">
       <h3 className="mb-4 text-start text-success fw-bold p-6">
-        Compartí tu opinión, aunque a nadie le importe
+        Debates futbolísticos
       </h3>
 
       <div className="d-flex flex-column gap-4">

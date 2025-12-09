@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { postService } from "../services/postServices";
 import { useAppSelector } from "../hooks/store";
 import CommentList from "./commentList";
@@ -7,14 +7,50 @@ import type { Comment as CommentType } from "../types/comment";
 import ModalDelete from "../modals/modalDelete";
 import { useNavigate } from "react-router-dom";
 import type { Post } from "../types/post";
+import { authService } from "../services/authServices";
+import type { User } from "../types/user";
+import { userService } from "../services/userServicies";
 
-const Post = ({ post, refreshPosts }: { post: Post; refreshPosts: () => void }) => {
+const CardPost = ({ post, refreshPosts }: { post: Post; refreshPosts: () => void }) => {
   const [commentText, setCommentText] = useState("");
   const [showComments, setShowComments] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  const user = useAppSelector(state => state.auth.User);
+  const [hasLiked, setHasLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(post.countLikes || 0);
+  const [userPost, setUser] = useState<User | null>(null);
+
+  const user = useAppSelector((state) => state.auth.User);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkLike = async () => {
+      if (user?._id) {
+        const liked = await authService.isLiked(post);
+        const u = await userService.getUserById(post.user._id);
+        setUser(u);
+        console.log(liked)
+        setHasLiked(liked);
+      }
+    };
+    checkLike();
+  }, [post._id]);
+
+const toggleLike = async () => {
+  try {
+    if (hasLiked) {
+      await postService.unlike(post._id);
+      setHasLiked(false);              
+      setLikesCount((prev) => prev - 1); 
+    } else {
+      await postService.like(post._id);
+      setHasLiked(true);             
+      setLikesCount((prev) => prev + 1); 
+    }
+  } catch (error) {
+    console.error("Error en like/unlike:", error);
+  }
+};
 
   const handleComment = async () => {
     if (!commentText.trim()) return;
@@ -22,7 +58,7 @@ const Post = ({ post, refreshPosts }: { post: Post; refreshPosts: () => void }) 
     const comment = {
       postId: post._id,
       userId: user?._id,
-      content: commentText.trim()
+      content: commentText.trim(),
     };
 
     await commentService.create(comment as CommentType);
@@ -60,7 +96,7 @@ const Post = ({ post, refreshPosts }: { post: Post; refreshPosts: () => void }) 
         className="p-4 mb-4 rounded shadow-sm text-start"
         style={{
           backgroundColor: "#77947bb8",
-          border: "1px solid #2c2a2a"
+          border: "1px solid #2c2a2a",
         }}
       >
         <div className="d-flex justify-content-between align-items-center mb-2">
@@ -69,7 +105,7 @@ const Post = ({ post, refreshPosts }: { post: Post; refreshPosts: () => void }) 
             style={{ cursor: "pointer" }}
             onClick={() => goToPerfil(post)}
           >
-            Posteo de {post.user?.name || "Usuario desconocido"}
+            {post.user?.name || "Usuario desconocido"} hincha de {userPost?.team || "Sin equipo"}
           </span>
 
           <div className="d-flex align-items-center gap-1">
@@ -108,12 +144,20 @@ const Post = ({ post, refreshPosts }: { post: Post; refreshPosts: () => void }) 
           </button>
         </div>
 
-        <div className="mt-3">
+        {/* Botón comentarios + Like */}
+        <div className="mt-3 d-flex justify-content-between align-items-center">
           <button
             className="btn btn-sm btn-outline-dark"
             onClick={() => setShowComments(!showComments)}
           >
             {showComments ? "Ocultar comentarios" : "Ver comentarios"}
+          </button>
+
+          <button
+            className={`btn btn-sm ${hasLiked ? "btn-success" : "btn-outline-success"}`}
+            onClick={toggleLike}
+          >
+          🤍{likesCount}
           </button>
         </div>
 
@@ -129,4 +173,4 @@ const Post = ({ post, refreshPosts }: { post: Post; refreshPosts: () => void }) 
   );
 };
 
-export default Post;
+export default CardPost;

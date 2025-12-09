@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { userService } from "../../services/userServicies";
 import { useAppSelector } from "../../hooks/store";
-import type { user } from "../../types/user";
+import type { User } from "../../types/user";
 import { Link } from "react-router-dom";
 import ModalDelete from "../../modals/modalDelete";   
 
@@ -10,11 +10,11 @@ export const Users = () => {
 
   const currentUser = useAppSelector((state) => state.auth.User);
   
-  const [users, setUsers] = useState<user[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
 
-  const [userSelected, setUserSelected] = useState<user | null>(null);
+  const [userSelected, setUserSelected] = useState<User | null>(null);
   
 
   const isAdmin = currentUser?.permissions?.includes('admin');
@@ -34,7 +34,7 @@ export const Users = () => {
     fetchUsers();
   }, []);
 
-  const clickDelete = (user: user) => {
+  const clickDelete = (user: User) => {
     setUserSelected(user);
   };
 
@@ -60,7 +60,7 @@ export const Users = () => {
   };
 
 
-  const handleActive = async (user: user) => {
+  const handleActive = async (user: User) => {
     try {
       await userService.activeUser(user);
       alert("Estado del usuario actualizado.");
@@ -102,24 +102,20 @@ return (
                 
                 <div className="card-body d-flex flex-column align-items-center text-center">
                   
-                  {/* 1. Nombre */}
                   <h5 className="card-title fw-bold text-dark mb-1">
                     {userItem.name}
                   </h5>
 
-                  {/* 2. Email */}
                   <p className="text-muted small mb-2 text-truncate" style={{maxWidth: "100%"}}>
                     {userItem.email}
                   </p>
 
-                  {/* 3. Equipo */}
                   <div className="mb-2">
                     <span className="badge bg-light text-success border border-success">
                       {userItem.team || "Sin equipo"}
                     </span>
                   </div>
 
-                  {/* 4. Estado (Activo / Inactivo) */}
                   <div className="mb-4">
                     {isActive ? (
                         <span className="badge bg-success rounded-pill">Activo</span>
@@ -128,7 +124,6 @@ return (
                     )}
                   </div>
 
-                  {/* Botonera (al fondo) */}
                   <div className="mt-auto d-flex gap-2 w-100 justify-content-center">
                     <Link 
                       to={`/miPerfil/${userId}`} 
@@ -137,7 +132,7 @@ return (
                       Ver Perfil
                     </Link>
 
-                    {/* LÓGICA DE BOTONES ADMIN */}
+
                     {isAdmin && currentUser?._id !== userId && (
                         <>
                             {isActive && (

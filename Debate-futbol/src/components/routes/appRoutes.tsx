@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, redirect } from 'react-router-dom'
 import { Login } from '../pages/login';
 import { MiPerfil } from '../pages/miPerfil';
 import { ProtectedRouter } from './ProtectedRouter';
@@ -21,9 +21,15 @@ export const AppRoutes=()=> {
         <Route path="/miPerfil" element={<MiPerfil />} />
         <Route path="/miPerfil/:userId" element={<MiPerfil />} />
         <Route path="/createPost" element={<CreatePost />} />
-        <Route path='/users' element={<Users/>} />
       </Route>
-
+      <Route
+           path="/users"
+           element={
+              <ProtectedRouter
+                  isAllowed={!!user && user.permissions.includes("admin")} redirectTo="/home">
+                  <Users/>
+              </ProtectedRouter>
+       }/>
    </Routes>
   );
 }

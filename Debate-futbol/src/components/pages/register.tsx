@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { authService } from "../../services/authServices"; 
 import { getClubs as getTeams, type team } from "../../services/clubServices"; 
-import type { user } from "../../types/user";
+import type { User } from "../../types/user";
 import { useAppSelector } from "../../hooks/store";
 import ModalUserCreated from "../../modals/modalUserCreated";
 import ModalLogin from "../../modals/modalLogin";
@@ -12,7 +12,7 @@ export const Register = () => {
     const [teams, setTeams] = useState<team[]>([]); 
     const [isLoadingTeams, setIsLoadingTeams] = useState(true);
 
-    const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm<user>();
+    const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm<User>();
 
    
     useEffect(() => {
@@ -33,7 +33,7 @@ export const Register = () => {
     const [showModalLogin, setShowModalLogin] = useState(false);
 
    
-    const onsubmit: SubmitHandler<user> = async (data) => {
+    const onsubmit: SubmitHandler<User> = async (data) => {
         const response = await authService.register(data);
         if (response) {
             setShowModalLogin(true); 

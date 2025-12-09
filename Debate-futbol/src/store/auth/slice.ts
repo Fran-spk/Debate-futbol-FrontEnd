@@ -1,6 +1,6 @@
 import { use } from "react";
 import { authService } from "../../services/authServices";
-import type { user } from "../../types/user";
+import type { User } from "../../types/user";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
@@ -19,7 +19,7 @@ export const loadUser = createAsyncThunk(
 );
 
 export interface AuthState {
-  User: user | null;
+  User: User | null;
 }
 
 const initialState: AuthState = {
@@ -34,14 +34,14 @@ export const authSlice = createSlice({
       state.User = null;
       authService.logout();
     },
-    login: (state, action: PayloadAction<user>) => {
+    login: (state, action: PayloadAction<User>) => {
       state.User = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(loadUser.fulfilled, (state, action) => {
-        state.User = action.payload as user;
+        state.User = action.payload as User;
       })
       .addCase(loadUser.rejected, (state) => {
         state.User = null; 

@@ -43,12 +43,9 @@ export const CreatePost = () => {
             team: selectedTeam || null
         };
       await postService.create(post as CreatePostDTO);
-
-      alert("Post creado con éxito");
       navigate("/home");
     } catch (error) {
       console.error("Error creando post:", error);
-      alert("Error al crear el post");
     }
   };
 
@@ -56,14 +53,13 @@ export const CreatePost = () => {
     <div className="container mt-4">
 
       <div className="card shadow-sm">
-        <div className="card-header text-white bg-primary">
+      <div className="card-header text-white bg-success">
           <h4 className="mb-0">Crear nuevo Post</h4>
         </div>
 
         <div className="card-body">
           <form onSubmit={handleSubmit}>
 
-            {/* Caja de texto */}
             <div className="mb-3">
               <label className="form-label fw-bold">Escribe tu post</label>
               <textarea
@@ -75,7 +71,6 @@ export const CreatePost = () => {
               />
             </div>
 
-            {/* Combo box de equipos */}
             <div className="mb-3">
               <label className="form-label fw-bold">Equipo (opcional)</label>
               <select
@@ -96,7 +91,6 @@ export const CreatePost = () => {
               </select>
             </div>
 
-            {/* Botón enviar */}
             <div className="d-grid">
               <button type="submit" className="btn btn-success">
                 Publicar

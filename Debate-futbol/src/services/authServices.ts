@@ -1,4 +1,5 @@
-import type { user } from "../types/user";
+import type { Post } from "../types/post";
+import type { User } from "../types/user";
 import api from "./api";
 
 interface LoginCredentials{
@@ -7,22 +8,27 @@ interface LoginCredentials{
 }
 
 export const authService = {
-    login: async(credentials: LoginCredentials) :Promise<user> =>{
+    login: async(credentials: LoginCredentials) :Promise<User> =>{
         const response = await api.post('/auth/login', credentials);
-        return response.data as user;
+        return response.data as User;
     },
     logout: async(): Promise<void>=>{
         await api.post('auth/logout');
     },
-    register: async(user: user) :Promise<user> =>{
+    register: async(user: User) :Promise<User> =>{
         const response = await api.post('/auth/register', user);
-        return response.data as user;
+        return response.data as User;
     },
-    getMe:  async() :Promise<user> =>{
+    getMe:  async() :Promise<User> =>{
     const response = await api.get("/auth/me", {
       withCredentials: true,  
     });
     return response.data;
-  },
+    },
+    isLiked:  async(post:Post) : Promise<boolean> =>{
+    const response = await api.get(`/auth/isLike/${post._id}`, {
+    });
+    return response.data.liked;
+    }
 };
 
