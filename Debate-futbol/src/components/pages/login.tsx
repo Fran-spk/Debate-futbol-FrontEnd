@@ -37,13 +37,12 @@ export const Login = () => {
     };
 
     return (
-        <div className="container mt-5 d-flex justify-content-center">
+        <div className="container d-flex justify-content-center" style={{marginTop:"8rem"}} >
             <div className="card shadow-sm p-4 rounded-4" style={{ maxWidth: "400px", width: "100%" }}>
                 <h2 className="text-success fw-bold mb-4 text-center">Iniciar sesión</h2>
 
                 <form onSubmit={handleSubmit(onsubmit)}>
-                    
-                    {/* 3. DISPLAY DEL ERROR DE LA API */}
+
                     {apiError && (
                         <div className="alert alert-danger text-center py-2" role="alert">
                             {apiError}

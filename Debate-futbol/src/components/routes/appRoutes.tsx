@@ -7,6 +7,8 @@ import { Home } from '../pages/home';
 import { Register } from '../pages/register';
 import { CreatePost } from '../pages/createPost';
 import { Users } from '../pages/users';
+import NotificationCard from '../pages/notification';
+
 export const AppRoutes=()=> {
   const user = useAppSelector(state=> state.auth.User);
   return (
@@ -22,6 +24,7 @@ export const AppRoutes=()=> {
         <Route path="/miPerfil/:userId" element={<MiPerfil />} />
         <Route path="/createPost" element={<CreatePost />} />
         <Route path="/users" element={<Users/>} />
+        <Route path='/notifications' element={<NotificationCard/>}/>
       </Route>
    </Routes>
   );

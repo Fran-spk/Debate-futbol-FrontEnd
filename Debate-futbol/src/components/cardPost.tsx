@@ -10,6 +10,9 @@ import type { Post } from "../types/post";
 import { authService } from "../services/authServices";
 import type { User } from "../types/user";
 import { userService } from "../services/userServices";
+import { notificationService } from "../services/notificationServices";
+import type { EnumNotification } from "../types/notification";
+
 
 const CardPost = ({ post, refreshPosts }: { post: Post; refreshPosts: () => void }) => {
   const [commentText, setCommentText] = useState("");
@@ -45,6 +48,7 @@ const CardPost = ({ post, refreshPosts }: { post: Post; refreshPosts: () => void
         await postService.like(post._id);
         setHasLiked(true);
         setLikesCount((prev) => prev + 1);
+        createNotification("Like");
       }
     } catch (error) {
       console.error("Error en like/unlike:", error);
@@ -59,13 +63,24 @@ const CardPost = ({ post, refreshPosts }: { post: Post; refreshPosts: () => void
       userId: user?._id,
       content: commentText.trim(),
     };
-
-    await commentService.create(comment as CommentType);
-
-    setCommentText("");
-    setShowComments(false);
-    setTimeout(() => setShowComments(true), 5);
+    try {
+      await commentService.create(comment as CommentType);
+      createNotification('Comment');
+      setCommentText("");
+      setShowComments(false);
+      setTimeout(() => setShowComments(true), 5);
+    } catch (error) {
+      console.error("Error al comentar:", error);
+    }
   };
+
+  const createNotification = async (type: EnumNotification)=>{
+     await notificationService.create({
+        postId: post._id,
+        userId: post.user._id, 
+        type: type
+      });
+  }
 
   const goToPerfil = (post: Post) => {
     if (post.user?._id) {

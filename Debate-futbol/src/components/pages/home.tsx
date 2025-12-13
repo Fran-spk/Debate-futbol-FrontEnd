@@ -9,7 +9,7 @@ export const Home = () => {
   const refreshPosts = async () => {
     try {
       const data = await postService.getPosts();
-  
+  console.log(data);
       setPosts(data);
     } catch (error) {
       console.error("Error al refrescar los posts:", error);

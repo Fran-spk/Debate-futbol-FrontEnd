@@ -36,7 +36,7 @@ const ConfigMe: React.FC = () => {
                   </Link>
                 </li>
                 <li>
-                   <Link className="dropdown-item" to="/miPerfil">
+                   <Link className="dropdown-item" to="/notifications">
                         Notificaciones
                     </Link>
                 </li>
