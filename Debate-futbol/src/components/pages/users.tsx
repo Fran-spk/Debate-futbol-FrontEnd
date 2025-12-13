@@ -80,7 +80,7 @@ export const Users = () => {
   
 return (
     <div className="container mt-4">
-      <h3 className="mb-4 text-start text-success fw-bold">
+      <h3 className="mb-4 text-start text-success fw-bold mt-5">
         Comunidad ({users.length})
       </h3>
 

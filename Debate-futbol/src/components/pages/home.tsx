@@ -24,7 +24,7 @@ export const Home = () => {
 
   return (
     <div className="container mt-4">
-      <h3 className="mb-4 text-start text-success fw-bold p-6">
+      <h3 className="mb-4 text-start text-success fw-bold p-6 mt-5">
         Debates futbolísticos
       </h3>
 

@@ -29,28 +29,27 @@ const CardPost = ({ post, refreshPosts }: { post: Post; refreshPosts: () => void
         const liked = await authService.isLiked(post);
         const u = await userService.getUserById(post.user._id);
         setUser(u);
-        console.log(liked)
         setHasLiked(liked);
       }
     };
     checkLike();
   }, [post._id]);
 
-const toggleLike = async () => {
-  try {
-    if (hasLiked) {
-      await postService.unlike(post._id);
-      setHasLiked(false);              
-      setLikesCount((prev) => prev - 1); 
-    } else {
-      await postService.like(post._id);
-      setHasLiked(true);             
-      setLikesCount((prev) => prev + 1); 
+  const toggleLike = async () => {
+    try {
+      if (hasLiked) {
+        await postService.unlike(post._id);
+        setHasLiked(false);
+        setLikesCount((prev) => prev - 1);
+      } else {
+        await postService.like(post._id);
+        setHasLiked(true);
+        setLikesCount((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error("Error en like/unlike:", error);
     }
-  } catch (error) {
-    console.error("Error en like/unlike:", error);
-  }
-};
+  };
 
   const handleComment = async () => {
     if (!commentText.trim()) return;
@@ -93,10 +92,11 @@ const toggleLike = async () => {
   return (
     <>
       <div
-        className="p-4 mb-4 rounded shadow-sm text-start"
+        className="p-4 mb-4 rounded shadow-lg text-start"
         style={{
-          backgroundColor: "#77947bb8",
-          border: "1px solid #2c2a2a",
+          backgroundColor: "#88938ab8",
+          border: "1px solid #484646",
+          boxShadow: "0 10px 25px rgba(0, 0, 0, 0.35)"
         }}
       >
         <div className="d-flex justify-content-between align-items-center mb-2">
@@ -144,7 +144,6 @@ const toggleLike = async () => {
           </button>
         </div>
 
-        {/* Botón comentarios + Like */}
         <div className="mt-3 d-flex justify-content-between align-items-center">
           <button
             className="btn btn-sm btn-outline-dark"
@@ -157,7 +156,7 @@ const toggleLike = async () => {
             className={`btn btn-sm ${hasLiked ? "btn-success" : "btn-outline-success"}`}
             onClick={toggleLike}
           >
-          🤍{likesCount}
+            🤍{likesCount}
           </button>
         </div>
 
