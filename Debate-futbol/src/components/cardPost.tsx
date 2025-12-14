@@ -27,15 +27,26 @@ const CardPost = ({ post, refreshPosts }: { post: Post; refreshPosts: () => void
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkLike = async () => {
-      if (user?._id) {
-        const liked = await authService.isLiked(post);
-        const u = await userService.getUserById(post.user._id);
-        setUser(u);
-        setHasLiked(liked);
+
+    const loadData = async () => {
+      try {
+        if(post.user && post.user?._id){
+          const u = await userService.getUserById(post.user._id);
+          setUser(u);
+        }
+
+        //checkeo de laik
+        if(user?._id){
+          const liked = await authService.isLiked(post);
+          setHasLiked(liked);
+        }
+      } catch (error) {
+        console.error("Error cargando datos del post", error);
       }
+    
     };
-    checkLike();
+
+    loadData();
   }, [post._id]);
 
   const toggleLike = async () => {

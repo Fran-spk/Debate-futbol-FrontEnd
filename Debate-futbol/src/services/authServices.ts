@@ -2,6 +2,7 @@ import type { Post } from "../types/post";
 import type { User } from "../types/user";
 import api from "./api";
 
+
 interface LoginCredentials{
     email: string;
     password: string;
@@ -29,6 +30,14 @@ export const authService = {
     const response = await api.get(`/auth/isLike/${post._id}`, {
     });
     return response.data.liked;
+    },
+
+    googleLogin: async(firebaseToken: string): Promise<User> => {
+
+        const response = await api.post(
+            'auth/google',
+            { firebaseToken }
+        );
+        return response.data;
     }
 };
-

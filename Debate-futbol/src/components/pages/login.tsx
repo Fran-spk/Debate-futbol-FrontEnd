@@ -5,6 +5,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from '../../hooks/store';
 import { useEffect, useState } from 'react'; 
 import { notificationService } from "../../services/notificationServices";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../../auth/firebase";
 
 export interface Inputs {
     email: string;
@@ -52,6 +54,19 @@ const onsubmit: SubmitHandler<Inputs> = async (data) => {
 };
 
 
+    const loginWithGoogle = async () => {
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            const firebaseToken = await result.user.getIdToken();
+
+            const data = await authService.googleLogin(firebaseToken);
+
+            dispatch(loginAction(data));
+            navigate("/home");
+        } catch (error) {
+            console.error("Google login failed:", error);
+        }
+    };
     return (
         <div className="container d-flex justify-content-center" style={{marginTop:"8rem"}} >
             <div className="card shadow-sm p-4 rounded-4" style={{ maxWidth: "400px", width: "100%" }}>
@@ -88,6 +103,10 @@ const onsubmit: SubmitHandler<Inputs> = async (data) => {
                     <button type='submit' className="btn btn-success w-100 fw-semibold">
                         Ingresar
                     </button>
+                    <button type='button' onClick={loginWithGoogle} className="btn btn-outline-success w-100 fw-semibold mt-3">
+                        Ingresar con Google
+                    </button>
+
                 </form>
 
                 <div className="mt-3 text-center">
