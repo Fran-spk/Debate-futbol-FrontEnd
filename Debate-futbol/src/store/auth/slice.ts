@@ -20,10 +20,12 @@ export const loadUser = createAsyncThunk(
 
 export interface AuthState {
   User: User | null;
+  Notifications: boolean;
 }
 
 const initialState: AuthState = {
   User: null,
+  Notifications: false,
 };
 
 export const authSlice = createSlice({
@@ -37,6 +39,12 @@ export const authSlice = createSlice({
     login: (state, action: PayloadAction<User>) => {
       state.User = action.payload;
     },
+     setNotifications: (state, action: PayloadAction<boolean>) => {
+      state.Notifications = action.payload;
+    },
+    clearNotifications: (state) => {
+      state.Notifications = false;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -49,5 +57,5 @@ export const authSlice = createSlice({
   },
 });
 
-export const { login, logout } = authSlice.actions;
+export const { login, logout,setNotifications,clearNotifications } = authSlice.actions;
 export default authSlice.reducer;

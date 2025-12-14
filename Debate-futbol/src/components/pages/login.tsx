@@ -1,9 +1,10 @@
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { authService } from '../../services/authServices';
-import { login as loginAction, logout } from "../../store/auth/slice";
+import { login as loginAction, logout, setNotifications } from "../../store/auth/slice";
 import { useNavigate, Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from '../../hooks/store';
-import { useEffect, useState } from 'react'; // Importar useState
+import { useEffect, useState } from 'react'; 
+import { notificationService } from "../../services/notificationServices";
 
 export interface Inputs {
     email: string;
@@ -25,16 +26,31 @@ export const Login = () => {
         setApiError(null); 
     }, [dispatch]);
 
-    const onsubmit: SubmitHandler<Inputs> = async (data) => {
-        setApiError(null);
-        try {
-            const response = await authService.login(data);
-            dispatch(loginAction(response));
-            navigate("/home"); 
-        } catch (error) {
-          setApiError("Hubo un error.");
-        }      
-    };
+const onsubmit: SubmitHandler<Inputs> = async (data) => {
+  setApiError(null);
+  try {
+    // 1️⃣ Login
+    const response = await authService.login(data);
+    dispatch(loginAction(response));
+
+    // 2️⃣ Traer notificaciones
+    try {
+      const notis = await notificationService.getAll();
+      if (Array.isArray(notis) && notis.length > 0) {
+        dispatch(setNotifications(true));
+      } else {
+        dispatch(setNotifications(false));
+      }
+    } catch (err) {
+      console.error("Error cargando notificaciones tras login", err);
+    }
+
+    navigate("/home");
+  } catch (error) {
+    setApiError("Hubo un error.");
+  }      
+};
+
 
     return (
         <div className="container d-flex justify-content-center" style={{marginTop:"8rem"}} >

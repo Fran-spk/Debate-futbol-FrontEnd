@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { notificationService } from "../../services/notificationServices";
 import type { Notification} from "../../types/notification";
+import { clearNotifications } from "../../store/auth/slice";
+import { useAppDispatch } from "../../hooks/store";
+
 
 const NotificationCard: React.FC = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const dispatch = useAppDispatch();
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -19,7 +22,18 @@ const NotificationCard: React.FC = () => {
     };
 
     fetchNotifications();
-  }, []);
+  }, [notifications]);
+
+  const marcarLeido=async ()=>{
+      try {
+        const res = await notificationService.allAsRead();
+        setNotifications([]);
+        dispatch(clearNotifications());
+      } catch (error) {
+        console.error("Error al marcar leidas", error);
+      }      
+    };
+  
 
   if (loading) {
     return <div className="text-center mt-5">Cargando notificaciones...</div>;
@@ -36,13 +50,10 @@ const NotificationCard: React.FC = () => {
   return (
     <div className="container mt-5">
       <h5 className="mb-3">Notificaciones</h5>
-
       {notifications.map((n) => (
         <div key={n.id} className="card mb-2 shadow-sm">
           <div className="card-body d-flex align-items-center gap-3">
 
-
-            {/* Texto */}
             <div className="flex-grow-1">
               <strong>{n.userSend.name}</strong>{" "}
               {n.type === "Like"
@@ -58,7 +69,14 @@ const NotificationCard: React.FC = () => {
           </div>
         </div>
       ))}
+      <button
+          className="btn btn-sm btn-outline-success"
+          onClick={marcarLeido}
+      >
+      Marcar como leídas
+     </button>
     </div>
+
   );
 };
 
