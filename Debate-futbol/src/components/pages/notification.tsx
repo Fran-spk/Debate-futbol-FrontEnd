@@ -25,7 +25,7 @@ const NotificationCard: React.FC = () => {
 
   const marcarLeido=async ()=>{
       try {
-        const res = await notificationService.allAsRead();
+       await notificationService.allAsRead();
         setNotifications([]);
         dispatch(clearNotifications());
       } catch (error) {
