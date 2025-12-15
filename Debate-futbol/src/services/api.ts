@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url_api = 'https://debate-futbol-back-end.vercel.app/api';
+const url_api = 'http://localhost:4000/api';
 
 export const api = axios.create({
     baseURL : url_api,
