@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import type { Comment as CommentType } from "../types/comment";
 import { useAppSelector } from "../hooks/store";
 import { commentService } from "../services/commentServices";

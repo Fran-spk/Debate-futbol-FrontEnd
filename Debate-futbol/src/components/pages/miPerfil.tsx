@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from '../../hooks/store';
 import { getClubs as getTeams, type team } from "../../services/clubServices";
 import { userService } from "../../services/userServices";
 import { login as loginAction } from "../../store/auth/slice";
-import { Link, Navigate, useParams } from "react-router-dom";
+import {  useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { postService } from "../../services/postServices";
 import type { Post } from "../../types/post";

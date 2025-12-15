@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { authService } from "../../services/authServices"; 
 import { getClubs as getTeams, type team } from "../../services/clubServices"; 
 import type { User } from "../../types/user";
-import { useAppSelector } from "../../hooks/store";
 import ModalUserCreated from "../../modals/modalUserCreated";
-import ModalLogin from "../../modals/modalLogin";
+
 
 export const Register = () => {
 

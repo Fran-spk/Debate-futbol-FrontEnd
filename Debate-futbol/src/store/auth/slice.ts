@@ -1,4 +1,3 @@
-import { use } from "react";
 import { authService } from "../../services/authServices";
 import type { User } from "../../types/user";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";

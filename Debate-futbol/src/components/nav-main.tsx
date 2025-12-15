@@ -1,4 +1,3 @@
-import React from "react";
 import { useAppSelector } from "../hooks/store";
 import ConfigMe from "./configMe";
 import { Link } from "react-router-dom";

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { userService } from "../../services/userServices";
 import { useAppSelector } from "../../hooks/store";
 import type { User } from "../../types/user";

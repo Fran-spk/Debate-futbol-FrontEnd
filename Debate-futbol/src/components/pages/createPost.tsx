@@ -3,7 +3,7 @@ import { getClubs as getTeams, type team } from "../../services/clubServices";
 import { postService } from "../../services/postServices";
 import { useAppSelector } from "../../hooks/store";
 import { useNavigate } from "react-router-dom";
-import type { CreatePostDTO, Post } from "../../types/post";
+import type { CreatePostDTO} from "../../types/post";
 
 export const CreatePost = () => {
   const navigate = useNavigate();

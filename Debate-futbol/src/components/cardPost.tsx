@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { postService } from "../services/postServices";
 import { useAppSelector } from "../hooks/store";
 import CommentList from "./commentList";

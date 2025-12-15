@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { notificationService } from "../../services/notificationServices";
-import type { Notification} from "../../types/notification";
 import { clearNotifications } from "../../store/auth/slice";
 import { useAppDispatch } from "../../hooks/store";
 
