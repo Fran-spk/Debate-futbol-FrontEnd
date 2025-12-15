@@ -11,10 +11,10 @@ export const Register = () => {
 
     const [teams, setTeams] = useState<team[]>([]); 
     const [isLoadingTeams, setIsLoadingTeams] = useState(true);
+    const [backendError, setBackendError] = useState<string | null>(null);
 
     const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm<User>();
 
-   
     useEffect(() => {
         const fetchTeams = async () => {
             try {
@@ -29,24 +29,43 @@ export const Register = () => {
         fetchTeams();
     }, []); 
 
-
     const [showModalLogin, setShowModalLogin] = useState(false);
 
-   
     const onsubmit: SubmitHandler<User> = async (data) => {
-        const response = await authService.register(data);
-        if (response) {
-            setShowModalLogin(true); 
-        }
-        else{
-            console.log(errors);
+        setBackendError(null);
+
+        try {
+            const response = await authService.register(data);
+
+            // Éxito
+            if (response && !response.errors) {
+                setShowModalLogin(true);
+                return;
+            }
+
+            // Error de validación backend
+            if (response?.errors?.length > 0) {
+                setBackendError(response.errors[0].messages[0]);
+            } else {
+                setBackendError("Ocurrió un error al registrar el usuario");
+            }
+
+        } catch (error) {
+            setBackendError("Ocurrió un error");
+            console.error(error);
         }
     };
-
 
     return (
         <div className="container mt-4" style={{ maxWidth: "500px" }}>
             <h2>Registro de Usuario</h2>
+
+            {backendError && (
+                <div className="alert alert-danger">
+                    {backendError}
+                </div>
+            )}
+
             <form onSubmit={handleSubmit(onsubmit)}>
 
                 <div className="mb-3">
@@ -128,7 +147,8 @@ export const Register = () => {
                     {isSubmitting ? "Registrando..." : "Registrarme"}
                 </button>
             </form>
-              {showModalLogin && <ModalUserCreated />}
+
+            {showModalLogin && <ModalUserCreated />}
         </div>
     );
 };

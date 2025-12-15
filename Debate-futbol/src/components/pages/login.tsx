@@ -31,12 +31,17 @@ export const Login = () => {
 const onsubmit: SubmitHandler<Inputs> = async (data) => {
   setApiError(null);
   try {
-    // 1️⃣ Login
     const response = await authService.login(data);
     dispatch(loginAction(response));
+    getNotification;
+    navigate("/home");
+  } catch (error) {
+    setApiError("Hubo un error.");
+  }      
+};
 
-    // 2️⃣ Traer notificaciones
-    try {
+const getNotification = async() =>{
+   try {
       const notis = await notificationService.getAll();
       if (Array.isArray(notis) && notis.length > 0) {
         dispatch(setNotifications(true));
@@ -46,22 +51,15 @@ const onsubmit: SubmitHandler<Inputs> = async (data) => {
     } catch (err) {
       console.error("Error cargando notificaciones tras login", err);
     }
-
-    navigate("/home");
-  } catch (error) {
-    setApiError("Hubo un error.");
-  }      
 };
-
 
     const loginWithGoogle = async () => {
         try {
             const result = await signInWithPopup(auth, googleProvider);
             const firebaseToken = await result.user.getIdToken();
-
             const data = await authService.googleLogin(firebaseToken);
-
             dispatch(loginAction(data));
+            getNotification;
             navigate("/home");
         } catch (error) {
             console.error("Google login failed:", error);

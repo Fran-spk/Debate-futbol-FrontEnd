@@ -22,7 +22,7 @@ const NotificationCard: React.FC = () => {
     };
 
     fetchNotifications();
-  }, [notifications]);
+  }, []);
 
   const marcarLeido=async ()=>{
       try {
